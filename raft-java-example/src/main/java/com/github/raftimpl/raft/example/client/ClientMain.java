@@ -6,9 +6,7 @@ import com.github.raftimpl.raft.example.server.service.ExampleProto;
 import com.github.raftimpl.raft.example.server.service.ExampleService;
 import com.googlecode.protobuf.format.JsonFormat;
 
-/**
- * Created by raftimpl on 2017/5/14.
- */
+
 public class ClientMain {
     public static void main(String[] args) {
         if (args.length < 2) {

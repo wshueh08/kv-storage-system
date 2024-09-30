@@ -14,9 +14,7 @@ import com.github.raftimpl.raft.service.impl.RaftConsensusServiceImpl;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by raftimpl on 2017/5/9.
- */
+
 public class ServerMain {
     public static void main(String[] args) {
         if (args.length != 3) {
@@ -37,29 +35,29 @@ public class ServerMain {
         // local server
         RaftProto.Server localServer = parseServer(args[2]);
 
-        // 初始化RPCServer
+        // Initialize RPCServer
         RpcServer server = new RpcServer(localServer.getEndpoint().getPort());
-        // 设置Raft选项，比如：
+        // Set Raft options, for example:
         // just for test snapshot
         RaftOptions raftOptions = new RaftOptions();
         raftOptions.setDataDir(dataPath);
         raftOptions.setSnapshotMinLogSize(10 * 1024);
         raftOptions.setSnapshotPeriodSeconds(30);
         raftOptions.setMaxSegmentFileSize(1024 * 1024);
-        // 应用状态机
+        // Application state machine
         ExampleStateMachine stateMachine = new ExampleStateMachine(raftOptions.getDataDir());
-        // 初始化RaftNode
+        // Initialize RaftNode
         RaftNode raftNode = new RaftNode(raftOptions, serverList, localServer, stateMachine);
-        // 注册Raft节点之间相互调用的服务
+        // Register Raft consensus services for communication between nodes
         RaftConsensusService raftConsensusService = new RaftConsensusServiceImpl(raftNode);
         server.registerService(raftConsensusService);
-        // 注册给Client调用的Raft服务
+        // Register Raft client services for client calls
         RaftClientService raftClientService = new RaftClientServiceImpl(raftNode);
         server.registerService(raftClientService);
-        // 注册应用自己提供的服务
+        // Register the custom application service
         ExampleService exampleService = new ExampleServiceImpl(raftNode, stateMachine);
         server.registerService(exampleService);
-        // 启动RPCServer，初始化Raft节点
+        // Start RPCServer and initialize Raft node
         server.start();
         raftNode.init();
     }

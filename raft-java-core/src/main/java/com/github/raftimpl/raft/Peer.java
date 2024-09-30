@@ -6,16 +6,14 @@ import com.baidu.brpc.client.instance.Endpoint;
 import com.github.raftimpl.raft.proto.RaftProto;
 import com.github.raftimpl.raft.service.RaftConsensusServiceAsync;
 
-/**
- * Created by raftimpl on 2017/5/5.
- */
+
 public class Peer {
     private RaftProto.Server server;
     private RpcClient rpcClient;
     private RaftConsensusServiceAsync raftConsensusServiceAsync;
-    // 需要发送给follower的下一个日志条目的索引值，只对leader有效
+   
     private long nextIndex;
-    // 已复制日志的最高索引值
+  
     private long matchIndex;
     private volatile Boolean voteGranted;
     private volatile boolean isCatchUp;

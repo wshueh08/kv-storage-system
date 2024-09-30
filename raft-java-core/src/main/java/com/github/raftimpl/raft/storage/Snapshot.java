@@ -19,9 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Created by raftimpl on 2017/5/6.
- */
+
 public class Snapshot {
 
     public class SnapshotDataFile {
@@ -32,9 +30,9 @@ public class Snapshot {
     private static final Logger LOG = LoggerFactory.getLogger(Snapshot.class);
     private String snapshotDir;
     private RaftProto.SnapshotMetaData metaData;
-    // 表示是否正在安装snapshot，leader向follower安装，leader和follower同时处于installSnapshot状态
+
     private AtomicBoolean isInstallSnapshot = new AtomicBoolean(false);
-    // 表示节点自己是否在对状态机做snapshot
+
     private AtomicBoolean isTakeSnapshot = new AtomicBoolean(false);
     private Lock lock = new ReentrantLock();
 
@@ -54,11 +52,7 @@ public class Snapshot {
         }
     }
 
-    /**
-     * 打开snapshot data目录下的文件，
-     * 如果是软链接，需要打开实际文件句柄
-     * @return 文件名以及文件句柄map
-     */
+
     public TreeMap<String, SnapshotDataFile> openSnapshotDataFiles() {
         TreeMap<String, SnapshotDataFile> snapshotDataFileMap = new TreeMap<>();
         String snapshotDataDir = snapshotDir + File.separator + "data";

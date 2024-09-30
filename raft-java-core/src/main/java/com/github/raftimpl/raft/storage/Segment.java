@@ -6,9 +6,8 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by raftimpl on 2017/5/3.
- */
+
+
 public class Segment {
 
     public static class Record {

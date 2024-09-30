@@ -11,9 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.TreeMap;
 
-/**
- * Created by raftimpl on 2017/7/2.
- */
+
 public class SnapshotTest {
 
     @Test

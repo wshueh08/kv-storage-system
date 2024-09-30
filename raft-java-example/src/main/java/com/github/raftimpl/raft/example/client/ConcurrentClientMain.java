@@ -11,9 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-/**
- * Created by raftimpl on 2017/5/14.
- */
+
 public class ConcurrentClientMain {
     private static JsonFormat jsonFormat = new JsonFormat();
 

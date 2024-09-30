@@ -9,9 +9,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.zip.CRC32;
 
-/**
- * Created by raftimpl on 2017/5/6.
- */
+
 @SuppressWarnings("unchecked")
 public class RaftFileUtils {
 

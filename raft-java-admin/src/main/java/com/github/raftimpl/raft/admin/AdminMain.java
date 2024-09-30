@@ -8,9 +8,7 @@ import org.apache.commons.lang3.Validate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by raftimpl on 2017/5/14.
- */
+
 public class AdminMain {
     private static final JsonFormat jsonFormat = new JsonFormat();
 
@@ -20,7 +18,7 @@ public class AdminMain {
             System.out.println("java -jar AdminMain servers cmd subCmd [args]");
             System.exit(1);
         }
-        // servers format is like "10.1.1.1:8010:1,10.2.2.2:8011:2,10.3.3.3.3:8012:3"
+      
         String servers = args[0];
         String cmd = args[1];
         String subCmd = args[2];

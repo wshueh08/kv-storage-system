@@ -14,9 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-/**
- * Created by raftimpl on 2017/5/3.
- */
+
 public class SegmentedLog {
 
     private static Logger LOG = LoggerFactory.getLogger(SegmentedLog.class);
@@ -26,7 +24,7 @@ public class SegmentedLog {
     private int maxSegmentFileSize;
     private RaftProto.LogMetaData metaData;
     private TreeMap<Long, Segment> startLogIndexSegmentMap = new TreeMap<>();
-    // segment log占用的内存大小，用于判断是否需要做snapshot
+
     private volatile long totalSize;
 
     public SegmentedLog(String raftDataDir, int maxSegmentFileSize) {
@@ -80,9 +78,7 @@ public class SegmentedLog {
     }
 
     public long getLastLogIndex() {
-        // 有两种情况segment为空
-        // 1、第一次初始化，firstLogIndex = 1，lastLogIndex = 0
-        // 2、snapshot刚完成，日志正好被清理掉，firstLogIndex = snapshotIndex + 1， lastLogIndex = snapshotIndex
+
         if (startLogIndexSegmentMap.size() == 0) {
             return getFirstLogIndex() - 1;
         }
@@ -106,7 +102,7 @@ public class SegmentedLog {
                         isNeedNewSegmentFile = true;
                     } else if (segment.getFileSize() + entrySize >= maxSegmentFileSize) {
                         isNeedNewSegmentFile = true;
-                        // 最后一个segment的文件close并改名
+
                         segment.getRandomAccessFile().close();
                         segment.setCanWrite(false);
                         String newFileName = String.format("%020d-%020d",
@@ -121,7 +117,7 @@ public class SegmentedLog {
                     }
                 }
                 Segment newSegment;
-                // 新建segment文件
+
                 if (isNeedNewSegmentFile) {
                     // open new segment file
                     String newSegmentFileName = String.format("open-%d", newLastLogIndex);
@@ -140,7 +136,7 @@ public class SegmentedLog {
                 } else {
                     newSegment = startLogIndexSegmentMap.lastEntry().getValue();
                 }
-                // 写proto到segment中
+
                 if (entry.getIndex() == 0) {
                     entry = RaftProto.LogEntry.newBuilder(entry)
                             .setIndex(newLastLogIndex).build();
@@ -316,14 +312,7 @@ public class SegmentedLog {
         }
     }
 
-    /**
-     * 更新raft log meta data，
-     * 包括commitIndex， fix bug: https://github.com/raftimpl/raft-java/issues/19
-     * @param currentTerm
-     * @param votedFor
-     * @param firstLogIndex
-     * @param commitIndex
-     */
+
     public void updateMetaData(Long currentTerm, Integer votedFor, Long firstLogIndex, Long commitIndex) {
         RaftProto.LogMetaData.Builder builder = RaftProto.LogMetaData.newBuilder(this.metaData);
         if (currentTerm != null) {

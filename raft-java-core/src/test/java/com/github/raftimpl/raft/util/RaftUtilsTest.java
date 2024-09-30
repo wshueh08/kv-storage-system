@@ -8,9 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Created by raftimpl on 2017/7/3.
- */
+
 public class RaftUtilsTest {
 
     @Test

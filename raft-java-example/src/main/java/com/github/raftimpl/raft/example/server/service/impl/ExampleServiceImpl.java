@@ -17,9 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * Created by raftimpl on 2017/5/9.
- */
+
 public class ExampleServiceImpl implements ExampleService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExampleServiceImpl.class);
@@ -60,7 +58,7 @@ public class ExampleServiceImpl implements ExampleService {
     @Override
     public ExampleProto.SetResponse set(ExampleProto.SetRequest request) {
         ExampleProto.SetResponse.Builder responseBuilder = ExampleProto.SetResponse.newBuilder();
-        // 如果自己不是leader，将写请求转发给leader
+        // If not the leader, forward write requests to the leader
         if (raftNode.getLeaderId() <= 0) {
             responseBuilder.setSuccess(false);
         } else if (raftNode.getLeaderId() != raftNode.getLocalServer().getServerId()) {
@@ -69,7 +67,7 @@ public class ExampleServiceImpl implements ExampleService {
             ExampleProto.SetResponse responseFromLeader = exampleService.set(request);
             responseBuilder.mergeFrom(responseFromLeader);
         } else {
-            // 数据同步写入raft集群
+            // Data synchronization write to the Raft cluster
             byte[] data = request.toByteArray();
             boolean success = raftNode.replicate(data, RaftProto.EntryType.ENTRY_TYPE_DATA);
             responseBuilder.setSuccess(success);

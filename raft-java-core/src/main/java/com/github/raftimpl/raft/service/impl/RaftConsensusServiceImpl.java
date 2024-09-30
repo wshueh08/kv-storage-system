@@ -17,8 +17,13 @@ import java.io.RandomAccessFile;
 import java.util.*;
 
 /**
- * Created by raftimpl on 2017/5/2.
+ * Implements the core logic of the Raft consensus algorithm.
+ * This class handles internal communication between Raft nodes, including pre-voting,
+ * leader election, log replication, and snapshot installation.
+ * It ensures the consistency and correct operation of the Raft cluster,
+ * serving as the concrete implementation of Raft's internal mechanisms.
  */
+
 public class RaftConsensusServiceImpl implements RaftConsensusService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RaftConsensusServiceImpl.class);
@@ -244,7 +249,7 @@ public class RaftConsensusServiceImpl implements RaftConsensusService {
 
             String currentDataFileName = currentDataDirName + File.separator + request.getFileName();
             File currentDataFile = new File(currentDataFileName);
-            // 文件名可能是个相对路径，比如topic/0/message.txt
+
             if (!currentDataFile.getParentFile().exists()) {
                 currentDataFile.getParentFile().mkdirs();
             }
@@ -277,12 +282,11 @@ public class RaftConsensusServiceImpl implements RaftConsensusService {
         }
 
         if (request.getIsLast() && responseBuilder.getResCode() == RaftProto.ResCode.RES_CODE_SUCCESS) {
-            // apply state machine
-            // TODO: make this async
+
             String snapshotDataDir = raftNode.getSnapshot().getSnapshotDir() + File.separator + "data";
             raftNode.getStateMachine().readSnapshot(snapshotDataDir);
             long lastSnapshotIndex;
-            // 重新加载snapshot
+
             raftNode.getSnapshot().getLock().lock();
             try {
                 raftNode.getSnapshot().reload();

@@ -12,10 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-/**
- * 非线程安全
- * Created by raftimpl on 2017/5/14.
- */
+
 public class RaftClientServiceProxy implements RaftClientService {
     private static final Logger LOG = LoggerFactory.getLogger(RaftClientServiceProxy.class);
     private static final JsonFormat jsonFormat = new JsonFormat();

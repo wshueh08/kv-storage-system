@@ -3,36 +3,36 @@ package com.github.raftimpl.raft.service;
 import com.github.raftimpl.raft.proto.RaftProto;
 
 /**
- * raft集群管理接口。
- * Created by raftimpl on 2017/5/14.
+ * Defines the client-facing operations for interacting with a Raft cluster.
+ * This interface provides methods for cluster management operations such as
+ * getting leader information, retrieving cluster configuration, and modifying
+ * cluster membership.
+ * @param request
+ * @return  Leader node
  */
+
 public interface RaftClientService {
 
-    /**
-     * 获取raft集群leader节点信息
-     * @param request 请求
-     * @return leader节点
-     */
     RaftProto.GetLeaderResponse getLeader(RaftProto.GetLeaderRequest request);
 
     /**
-     * 获取raft集群所有节点信息。
-     * @param request 请求
-     * @return raft集群各节点地址，以及主从关系。
+     * Get information about all nodes in the Raft cluster
+     * @param request 
+     * @return Addresses of all nodes in the Raft cluster and their master-slave relationships
      */
     RaftProto.GetConfigurationResponse getConfiguration(RaftProto.GetConfigurationRequest request);
 
     /**
-     * 向raft集群添加节点。
-     * @param request 要添加的节点信息。
-     * @return 成功与否。
+     * Add a node to the Raft cluster
+     * @param request request Information about the node to be added
+     * @return Success or failure
      */
     RaftProto.AddPeersResponse addPeers(RaftProto.AddPeersRequest request);
 
     /**
-     * 从raft集群删除节点
-     * @param request 请求
-     * @return 成功与否。
+     * Remove a node from the Raft cluster
+     * @param request Request
+     * @return Success or failure
      */
     RaftProto.RemovePeersResponse removePeers(RaftProto.RemovePeersRequest request);
 }

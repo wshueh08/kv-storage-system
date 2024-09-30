@@ -1,6 +1,7 @@
 package com.github.raftimpl.raft;
 
 import com.baidu.brpc.client.RpcCallback;
+import com.github.raftimpl.raft.RaftNode.NodeState;
 import com.github.raftimpl.raft.proto.RaftProto;
 import com.github.raftimpl.raft.storage.SegmentedLog;
 import com.github.raftimpl.raft.util.ConfigurationUtils;
@@ -19,13 +20,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.*;
 
-/**
- * Created by raftimpl on 2017/5/2.
- * 该类是raft核心类，主要有如下功能：
- * 1、保存raft节点核心数据（节点状态信息、日志信息、snapshot等），
- * 2、raft节点向别的raft发起rpc请求相关函数
- * 3、raft节点定时器：主节点心跳定时器、发起选举定时器。
- */
 public class RaftNode {
 
     public enum NodeState {
@@ -47,14 +41,14 @@ public class RaftNode {
     private Snapshot snapshot;
 
     private NodeState state = NodeState.STATE_FOLLOWER;
-    // 服务器最后一次知道的任期号（初始化为 0，持续递增）
+
     private long currentTerm;
-    // 在当前获得选票的候选人的Id
+
     private int votedFor;
-    private int leaderId; // leader节点id
-    // 已知的最大的已经被提交的日志条目的索引值
+    private int leaderId;
+ 
     private long commitIndex;
-    // 最后被应用到状态机的日志条目索引值（初始化为 0，持续递增）
+   
     private volatile long lastAppliedIndex;
 
     private Lock lock = new ReentrantLock();
@@ -169,7 +163,7 @@ public class RaftNode {
             }
 
             if (raftOptions.isAsyncWrite()) {
-                // 主节点写成功后，就返回。
+              
                 return true;
             }
 
@@ -353,7 +347,7 @@ public class RaftNode {
                         lastAppliedTerm, localConfiguration.build());
                 String tmpSnapshotDataDir = tmpSnapshotDir + File.separator + "data";
                 stateMachine.writeSnapshot(tmpSnapshotDataDir);
-                // rename tmp snapshot dir to snapshot dir
+
                 try {
                     File snapshotDirFile = new File(snapshot.getSnapshotDir());
                     if (snapshotDirFile.exists()) {
@@ -371,7 +365,7 @@ public class RaftNode {
             }
 
             if (success) {
-                // 重新加载snapshot
+                
                 long lastSnapshotIndex = 0;
                 snapshot.getLock().lock();
                 try {
@@ -402,7 +396,7 @@ public class RaftNode {
             RaftProto.Configuration newConfiguration
                     = RaftProto.Configuration.parseFrom(entry.getData().toByteArray());
             configuration = newConfiguration;
-            // update peerMap
+
             for (RaftProto.Server server : newConfiguration.getServersList()) {
                 if (!peerMap.containsKey(server.getServerId())
                         && server.getServerId() != localServer.getServerId()) {
@@ -422,14 +416,12 @@ public class RaftNode {
         if (lastLogIndex >= raftLog.getFirstLogIndex()) {
             return raftLog.getEntryTerm(lastLogIndex);
         } else {
-            // log为空，lastLogIndex == lastSnapshotIndex
+           
             return snapshot.getMetaData().getLastIncludedTerm();
         }
     }
 
-    /**
-     * 选举定时器
-     */
+ 
     private void resetElectionTimer() {
         if (electionScheduledFuture != null && !electionScheduledFuture.isDone()) {
             electionScheduledFuture.cancel(true);
@@ -450,12 +442,7 @@ public class RaftNode {
         return randomElectionTimeout;
     }
 
-    /**
-     * 客户端发起pre-vote请求。
-     * pre-vote/vote是典型的二阶段实现。
-     * 作用是防止某一个节点断网后，不断的增加term发起投票；
-     * 当该节点网络恢复后，会导致集群其他节点的term增大，导致集群状态变更。
-     */
+
     private void startPreVote() {
         lock.lock();
         try {
@@ -484,9 +471,7 @@ public class RaftNode {
         resetElectionTimer();
     }
 
-    /**
-     * 客户端发起正式vote，对candidate有效
-     */
+
     private void startVote() {
         lock.lock();
         try {
@@ -518,8 +503,8 @@ public class RaftNode {
     }
 
     /**
-     * 客户端发起pre-vote请求
-     * @param peer 服务端节点信息
+     * lient initiates a pre-vote request
+     * @param peer 
      */
     private void preVote(Peer peer) {
         LOG.info("begin pre vote request");
@@ -541,8 +526,8 @@ public class RaftNode {
     }
 
     /**
-     * 客户端发起正式vote请求
-     * @param peer 服务端节点信息
+     * Client initiates a formal vote request
+     * @param peer Server node information
      */
     private void requestVote(Peer peer) {
         LOG.info("begin vote request");
@@ -719,7 +704,7 @@ public class RaftNode {
         }, raftOptions.getHeartbeatPeriodMilliseconds(), TimeUnit.MILLISECONDS);
     }
 
-    // in lock, 开始心跳，对leader有效
+    // In lock, start heartbeat, effective for the leader
     private void startNewHeartbeat() {
         LOG.debug("start new heartbeat, peers={}", peerMap.keySet());
         for (final Peer peer : peerMap.values()) {
@@ -735,7 +720,7 @@ public class RaftNode {
 
     // in lock, for leader
     private void advanceCommitIndex() {
-        // 获取quorum matchIndex
+        // get quorum matchIndex
         int peerNum = configuration.getServersList().size();
         long[] matchIndexes = new long[peerNum];
         int i = 0;
@@ -761,7 +746,7 @@ public class RaftNode {
         long oldCommitIndex = commitIndex;
         commitIndex = newCommitIndex;
         raftLog.updateMetaData(currentTerm, null, raftLog.getFirstLogIndex(), commitIndex);
-        // 同步到状态机
+  
         for (long index = oldCommitIndex + 1; index <= newCommitIndex; index++) {
             RaftProto.LogEntry entry = raftLog.getEntry(index);
             if (entry.getType() == RaftProto.EntryType.ENTRY_TYPE_DATA) {

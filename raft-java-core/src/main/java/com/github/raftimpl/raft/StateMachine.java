@@ -1,26 +1,23 @@
 package com.github.raftimpl.raft;
 
-/**
- * Raft状态机接口类
- * Created by raftimpl on 2017/5/10.
- */
+
 public interface StateMachine {
 
     /**
-     * 对状态机中数据进行snapshot，每个节点本地定时调用
-     * @param snapshotDir snapshot数据输出目录
+     * Take a snapshot of the data in the state machine. This is called periodically on each node.
+     * @param snapshotDir snapshotDir Directory to output the snapshot data
      */
     void writeSnapshot(String snapshotDir);
 
     /**
-     * 读取snapshot到状态机，节点启动时调用
-     * @param snapshotDir snapshot数据目录
+     * Read a snapshot into the state machine, called when the node starts up
+     * @param snapshotDir snapshotDir Directory of the snapshot data
      */
     void readSnapshot(String snapshotDir);
 
     /**
-     * 将数据应用到状态机
-     * @param dataBytes 数据二进制
+     * Apply data to the state machine
+     * @param dataBytes dataBytes Binary data
      */
     void apply(byte[] dataBytes);
 }

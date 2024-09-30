@@ -13,7 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by raftimpl on 2017/5/14.
+ * Implements the RaftClientService interface, providing concrete logic for
+ * Raft cluster management operations. This class interacts directly with
+ * a RaftNode to execute client requests, translating high-level client
+ * operations into specific Raft protocol actions.
  */
 public class RaftClientServiceImpl implements RaftClientService {
     private static final Logger LOG = LoggerFactory.getLogger(RaftClientServiceImpl.class);
